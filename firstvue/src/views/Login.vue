@@ -48,11 +48,23 @@ export default {
     }
   },
   methods: {
-    login () {
-    this.$refs.loginFormRef.validate(vaild=>{
-        if(vaild)
-    })
-      this.$router.push('/home')
+      login () {
+      this.$refs.loginFormRef.validate(valid => {
+        if (valid) {
+          var pro = this.$http.post('/authorizations', this.loginForm)
+          pro
+            .then(result => {
+              if (result.data.message === 'OK') {
+                window.sessionStorage.setItem('userinfo', JSON.stringify(result.data.data))
+
+                this.$router.push({ name: 'home' }) // 进入首页
+              }
+            })
+            .catch(err => {
+              return this.$message.error('用户名或密码错误:' + err)
+            })
+        }
+      })
     }
   }
 }
