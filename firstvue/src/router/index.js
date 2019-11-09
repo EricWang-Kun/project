@@ -1,28 +1,17 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
-  {
-    path: '/',
-    name: 'home',
-    component: Home
-  },
-  {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
+  // @ 是系统给封装好的别名，代表src目录的"绝对路径名"信息
+  // @：E:\Vue86-87\86\86everyday\02daypro\topline\src\
+  { path: '/login', name: 'login', component: () => import('@/views/Login') },
+  { path: '/home', name: 'home', component: () => import('@/views/Home') },
+  // { path: '/', name: 'home', component: () => import('@/views/Login') }
 ]
 
 const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
   routes
 })
 
