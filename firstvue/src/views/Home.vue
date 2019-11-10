@@ -21,7 +21,7 @@
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item>个人信息</el-dropdown-item>
         <el-dropdown-item>github地址</el-dropdown-item>
-        <el-dropdown-item>退出</el-dropdown-item>
+        <el-button @click="logout()">退出</el-button>
       </el-dropdown-menu>
     </el-dropdown>
   </div>
@@ -38,6 +38,18 @@ export default {
     },
     photo () {
       return JSON.parse(window.sessionStorage.getItem('userinfo')).photo
+    }
+  },
+  methods: {
+    logout () {
+      this.$confirm('确定要提出系统?', '退出', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        window.sessionStorage.clear()
+        this.$router.push('/login')
+      }).catch(() => { })
     }
   }
 }
