@@ -14,7 +14,8 @@
           <span>我已阅读并同意用户协议和隐私条款</span>
         </el-form-item>
         <el-form-item>
-          <el-button style="width:100%" type="primary" @click="login()">登录</el-button>
+          <el-button style="width:100%" :loading="isActive"
+           :disabled="isActive" type="primary" @click="login()">登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -22,12 +23,15 @@
 </template>
 
 <script>
+import '@/assets/js/gt.js'
 export default {
   data () {
     var xieyiTest = function (rule, value, callback) {
       value ? callback() : callback(new Error('请无条件遵守规矩'))
     }
     return {
+      isActive: false,
+      ctaObj: null,
       loginForm: {
         mobile: '18034250529', // 手机号码
         code: '246810', // 校验码
@@ -48,16 +52,32 @@ export default {
     }
   },
   methods: {
-   login () {
+    login () {
       this.$refs.loginFormRef.validate(valid => {
         // 表单域校验成功
         if (valid) {
+          this.isActive = true
           // A. axios获得极验初始校验信息
           let pro = this.$http.get(`/captchas/${this.loginForm.mobile}`)
           pro
             .then(result => {
               // 服务器端返回极验的请求秘钥信息
-              console.log(result)
+              let { data } = result.data
+              window.initGeetest({
+                gt: data.gt,
+                challenge: data.challenge,
+                offline: !data.success,
+                new_captcha: true,
+                product: 'bind'
+              }, captchaObj => {
+                captchaObj.onReady(() => {
+                  captchaObj.verify()
+                }).onSuccess(() => {
+                  this.loginAct()
+                }).onError(() => {
+                  // your code
+                })
+              })
             })
             .catch(err => {
               return this.$message.error('获得极验初始校验信息错误：' + err)
@@ -77,6 +97,7 @@ export default {
           if (result.data.message === 'OK') {
             // 客户端记录用户的信息
             window.sessionStorage.setItem('userinfo', JSON.stringify(result.data.data))
+            this.isActive = false
             // 进入后台系统
             this.$router.push('/home')
           }
