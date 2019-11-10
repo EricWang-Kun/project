@@ -71,6 +71,7 @@ export default {
                 product: 'bind'
               }, captchaObj => {
                 captchaObj.onReady(() => {
+                  this.isActive = false
                   captchaObj.verify()
                 }).onSuccess(() => {
                   this.loginAct()
@@ -97,7 +98,6 @@ export default {
           if (result.data.message === 'OK') {
             // 客户端记录用户的信息
             window.sessionStorage.setItem('userinfo', JSON.stringify(result.data.data))
-            this.isActive = false
             // 进入后台系统
             this.$router.push('/home')
           }
