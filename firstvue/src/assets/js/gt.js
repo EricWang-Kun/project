@@ -258,7 +258,7 @@
       pt: pt,
       exception_url: url,
       error_code: config.error_code
-    })  
+    })
   }
 
   var throwError = function (errorType, config) {
