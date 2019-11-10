@@ -25,12 +25,12 @@
 export default {
   data () {
     var xieyiTest = function (rule, value, callback) {
-      value ? callback() : callback(new Error('请无条件遵守规矩'));
+      value ? callback() : callback(new Error('请无条件遵守规矩'))
     }
     return {
       loginForm: {
         mobile: '18034250529', // 手机号码
-        code: '050499', // 校验码
+        code: '246810', // 校验码
         xieyi: true // 协议
       },
       loginFormRules: {
@@ -48,7 +48,7 @@ export default {
     }
   },
   methods: {
-      login () {
+    login () {
       this.$refs.loginFormRef.validate(valid => {
         if (valid) {
           var pro = this.$http.post('/authorizations', this.loginForm)
