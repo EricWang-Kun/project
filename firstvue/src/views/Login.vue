@@ -48,26 +48,46 @@ export default {
     }
   },
   methods: {
-    login () {
+   login () {
       this.$refs.loginFormRef.validate(valid => {
+        // 表单域校验成功
         if (valid) {
-          var pro = this.$http.post('/authorizations', this.loginForm)
+          // A. axios获得极验初始校验信息
+          let pro = this.$http.get(`/captchas/${this.loginForm.mobile}`)
           pro
             .then(result => {
-              if (result.data.message === 'OK') {
-                window.sessionStorage.setItem('userinfo', JSON.stringify(result.data.data))
-
-                this.$router.push({ name: 'home' }) // 进入首页
-              }
+              // 服务器端返回极验的请求秘钥信息
+              console.log(result)
             })
             .catch(err => {
-              return this.$message.error('用户名或密码错误:' + err)
+              return this.$message.error('获得极验初始校验信息错误：' + err)
             })
+
+          // B. 账号真实校验，登录后台
+          // this.loginAct()
         }
       })
+    },
+    // 校验账号真实性，登录后台
+    loginAct () {
+      // 账号真实性校验
+      var pro = this.$http.post('/authorizations', this.loginForm)
+      pro
+        .then(result => {
+          if (result.data.message === 'OK') {
+            // 客户端记录用户的信息
+            window.sessionStorage.setItem('userinfo', JSON.stringify(result.data.data))
+            // 进入后台系统
+            this.$router.push('/home')
+          }
+        })
+        .catch(err => {
+          return this.$message.error('用户名或密码错误' + err)
+        })
     }
   }
 }
+
 </script>
 
 <style>
