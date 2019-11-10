@@ -4,6 +4,9 @@ import router from './router'
 // 全局引入css样式
 import '@/assets/css/global.css'
 import ElementUI from 'element-ui'
+import axios from 'axios'
+axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
+Vue.prototype.$http = axios
 Vue.use(ElementUI)
 Vue.config.productionTip = false
 
