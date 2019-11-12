@@ -50,7 +50,9 @@ export default {
         status: '',
         channel_id: '', // 频道
         begin_pubdate: '', // 文章发布开始时间
-        end_pubdate: ''
+        end_pubdate: '',
+        page: 1,
+        per_page: 10
       },
       channelList: [
         { id: 201, name: 'ios' },
@@ -58,7 +60,8 @@ export default {
         { id: 203, name: '塞班' }
       ],
       timetotime: [],
-      ChannelList: []
+      ChannelList: [],
+      articlelist: []
     }
   },
   watch: {
