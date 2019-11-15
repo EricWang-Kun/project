@@ -17,14 +17,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="频道列表：">
-            <el-select v-model="searchForm.channel_id" placeholder="请选择"  clearable @change="getArticleList">
-              <el-option
-               v-for="item in ChannelList"
-               :key="item.id"
-               :label="item.name"
-               :value="item.id"
-               ></el-option>
-            </el-select>
+            <channel-com @slt="selectHandler"></channel-com>
           </el-form-item>
           <el-form-item label="时间选择：">
             <el-date-picker
@@ -60,8 +53,10 @@
       </el-table-column>
       <el-table-column label="发布时间" prop="pubdate" width="160"></el-table-column>
         <el-table-column label="操作">
-          <el-button type="primary" size="mini">修改</el-button>
-          <el-button type="danger" size="mini">删除</el-button>
+          <template slot-scope="stData">
+          <el-button type="primary" size="mini" @click="$router.push(`/articleedit/${stData.row.id}`)">修改</el-button>
+          <el-button type="danger" size="mini" @click="del(stData.row.id)">删除</el-button>
+          </template>
       </el-table-column>
       </el-table>
       </div>
@@ -81,8 +76,22 @@
 </template>
 
 <script>
+import ChannelCom from '@/components/channel.vue'
+// var JSONbig = require('json-bigint') // 需要先安装 yarn add json-bigint
+// var str = '{ "value" : 9223372036854775807, "v2": 123 }'
+
+// var obj = JSONbig.parse(str) // 字符串--->对象
+// console.log('-------', obj.value) // 9223372036854775807(正确)
+
+// var obj2 = JSON.parse(str) // 字符串--->对象
+// console.log('========', obj2.value) // 9223372036854776000(错误)
+
 export default {
   name: 'ArticleList',
+  components: {
+    // 注册频道独立组件
+    ChannelCom
+  },
   data () {
     return {
       tot: 0,
@@ -95,13 +104,7 @@ export default {
         page: 1,
         per_page: 10
       },
-      channelList: [
-        { id: 201, name: 'ios' },
-        { id: 202, name: 'andriod' },
-        { id: 203, name: '塞班' }
-      ],
       timetotime: [],
-      ChannelList: [],
       articleList: []
     }
   },
@@ -123,23 +126,29 @@ export default {
     }
   },
   created () {
-    this.getChannelList()
     this.getArticleList()
   },
   methods: {
-    getChannelList () {
-      var pro = this.$http.get('/channels')
-      pro
-        .then(result => {
-          // console.log(result.data.message)
-          if (result.data.message.toString() === 'OK') {
-            this.ChannelList = result.data.data.channels
-            // console.log(this.ChannelList)
-          }
-        })
-        .catch(err => {
-          console.log(err)
-        })
+    del (id) {
+      console.log(id)
+      this.$confirm('确认要删除该文章么?', '删除', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let pro = this.$http.delete(`/articles/${id}`)
+        pro
+          .then(result => {
+            // 直接更新列表页面
+            this.getArticleList()
+          })
+          .catch(err => {
+            return this.$message.error('删除文章失败:' + err)
+          })
+      }).catch(() => { })
+    },
+    selectHandler (val) {
+      this.addForm.channel_id = val
     },
     getArticleList () {
       let searchData = {}
@@ -184,6 +193,7 @@ export default {
     }
   }
 }
+
 </script>
 
 <style>

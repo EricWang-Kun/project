@@ -7,7 +7,15 @@ const routes = [
   // @ 是系统给封装好的别名，代表src目录的"绝对路径名"信息
   // @：E:\Vue86-87\86\86everyday\02daypro\topline\src\
   { path: '/login', name: 'login', component: () => import('@/views/Login') },
-  { path: '/home', name: 'home', component: () => import('@/views/Home'), redirect: '/welcome', children: [{ path: '/welcome', name: 'welcome', component: () => import('@/views/Home_son/welcome.vue') }, { path: '/article', name: 'article_list', component: () => import('@/views/Home_son/article.vue') }, { path: '/addarticle', name: 'ArticleAdd', component: () => import('@/views/Home_son/addarticle.vue') }] }
+  { path: '/home',
+    name: 'home',
+    component: () => import('@/views/Home'),
+    redirect: '/welcome',
+    children:
+   [{ path: '/welcome', name: 'welcome', component: () => import('@/views/Home_son/welcome.vue') },
+     { path: '/article', name: 'article_list', component: () => import('@/views/Home_son/article.vue') },
+     { path: '/addarticle', name: 'ArticleAdd', component: () => import('@/views/Home_son/addarticle.vue') },
+     { path: '/articleedit/:aid', name: 'ArticleEdit', component: () => import('@/views/Home_son/articleedit.vue') }] }
   // { path: '/', name: 'home', component: () => import('@/views/Login') }
 ]
 const router = new VueRouter({
