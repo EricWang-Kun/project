@@ -13,6 +13,22 @@ export default {
       channelList: [] // 服务器端真实频道数据(数组对象集)
     }
   },
+  props: {
+    // cid的值有类型 和 默认值 修饰
+    cid: {
+      // type: Number, // Object Array
+      default: 0 // 设置默认值
+    }
+  },
+  watch: {
+    // 监听父组件是否有传递cid信息过来，有的话，就接收赋予给chid，使得频道有默认显示项目
+    cid: function (newV, oldV) {
+      this.chid = newV
+    },
+    chid: function (newV, oldV) {
+      this.$emit('slt', newV)
+    }
+  },
   created () {
     this.getChannelList() // 获得频道
   },

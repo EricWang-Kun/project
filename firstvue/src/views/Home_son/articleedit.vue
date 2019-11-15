@@ -25,19 +25,9 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="频道" prop="channel_id">
-          <el-select v-model="editForm.channel_id" placeholder="请选择" clearable >
-              <el-option
-                v-for="item in channelList"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-              <!--
-                label:下拉列表小单元对外提示内容
-                value:value值选项
-              -->
-            </el-select>
-        </el-form-item>
+               <channel-com @slt="selectHandler" :cid="editForm.channel_id"
+               ></channel-com>
+         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="editarticle(false)">修改</el-button>
           <el-button @click="editarticle(true)">存入草稿</el-button>
@@ -54,14 +44,14 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 // 引入编辑器主组件模块(按需导入)
 import { quillEditor } from 'vue-quill-editor'
-import { log } from 'util'
-
+import ChannelCom from '@/components/channel.vue'
 export default {
   name: 'ArticleEdit',
   components: {
     // 简易成员赋值 quillEditor: quillEditor
     // 组件使用两种方式：<quillEditor></quillEditor> 或 <quill-editor></quill-editor>
-    quillEditor
+    quillEditor,
+    ChannelCom
   },
   data () {
     return {
@@ -79,7 +69,6 @@ export default {
         content: [{ required: true, message: '内容必填' }],
         channel_id: [{ required: true, message: '频道必选' }]
       },
-      channelList: [], // 服务器端真实频道数据(数组对象集)
       editForm: {
         title: '', // 标题
         content: '', // 文章内容
@@ -94,10 +83,12 @@ export default {
     }
   },
   created () {
-    this.getChannelList() // 获得频
     this.getArticleByAid()
   },
   methods: {
+    selectHandler (val) {
+      this.editForm.channel_id = val
+    },
     // 发表文章
     // flag=true  是存入草稿
     // flag=false  正式发布
@@ -122,39 +113,25 @@ export default {
       })
     },
     getArticleByAid () {
-  let pro = this.$http.get(`/articles/${this.aid}`)
-  pro
-    .then(result => {
-    if (result.data.message === 'OK') {
-      // 把文章赋予给editForm里边
-      this.editForm = result.data.data
-    }
-
-  })
-    .catch(err => {
-    return this.$message.error('获得文章失败！：' + err)
-  })
-},
-    // 获得频道列表数据
-    getChannelList () {
-      let pro = this.$http.get('/channels')
+      let pro = this.$http.get(`/articles/${this.aid}`)
       pro
         .then(result => {
           if (result.data.message === 'OK') {
-            // 把获得的频道信息赋予给channelList成员
-            this.channelList = result.data.data.channels
+          // 把文章赋予给editForm里边
+            this.editForm = result.data.data
           }
         })
         .catch(err => {
-          return this.$message.error('获得频道错误：' + err)
+          return this.$message.error('获得文章失败！：' + err)
         })
     }
+    // 获得频道列表数据
   },
   computed: {
-      aid () {
-       console.log(this.$route.params.aid);
-       return this.$route.params.aid   
-      }
+    aid () {
+      console.log(this.$route.params.aid)
+      return this.$route.params.aid
+    }
   }
 }
 </script>
