@@ -20,19 +20,8 @@
               <el-radio :label="-1">自动</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="频道：" prop="channel_id">
-             <el-select
-              v-model="addForm.channel_id"
-              placeholder="请选择"
-              clearable
-            >
-              <el-option
-                v-for="item in channelList"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
+          <el-form-item label="频道" prop="channel_id">
+              <channel-com @slt="selectHandler"></channel-com>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="addarticle(false)">发布</el-button>
@@ -49,12 +38,14 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import { quillEditor } from 'vue-quill-editor'
+import ChannelCom from '@/components/channel.vue'
 export default {
   name: 'ArticleAdd',
   components: {
     // 简易成员赋值 quillEditor: quillEditor
     // 组件使用两种方式：<quillEditor></quillEditor> 或 <quill-editor></quill-editor>
-    quillEditor
+    quillEditor,
+    ChannelCom
   },
   data () {
     return {
@@ -71,7 +62,6 @@ export default {
         content: [{ required: true, message: '内容必填' }],
         channel_id: [{ required: true, message: '频道必选' }]
       },
-      channelList: [], // 接收频道列表数据
       addForm: {
         title: '', // 文章标题
         content: '', // 文章内容
@@ -87,19 +77,10 @@ export default {
     this.getChannelList()
   },
   methods: {
-    // 获取频道列表数据
-    getChannelList () {
-      var pro = this.$http.get('/channels')
-      pro
-        .then(result => {
-          if (result.data.message === 'OK') {
-            this.channelList = result.data.data.channels
-          }
-        })
-        .catch(err => {
-          return this.$message.error('获得文章频道错误：' + err)
-        })
+    selectHandler (val) {
+      this.addForm.channel_id = val
     },
+    // 获取频道列表数据
     addarticle (flag) {
       // 表单校验
       this.$refs.addForm.validate(valid => {
