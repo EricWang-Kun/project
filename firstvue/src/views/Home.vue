@@ -20,7 +20,7 @@
         <i class="el-icon-location"></i>
         <span slot="title">粉丝管理</span>
       </el-menu-item>
-      <el-menu-item index="4" style="width:200px">
+      <el-menu-item index="/account" style="width:200px">
         <i class="el-icon-location"></i>
         <span slot="title">账户管理</span>
       </el-menu-item>
@@ -59,13 +59,43 @@
   </el-container>
 </template>
 <script>
+import bus from '@/utils/bus.js'
 export default {
+  created () {
+    // 给bus绑定事件,对账户的名字做更新
+    bus.$on('upAccountName', nm => {
+      // nm是更新后的名字
+      // console.log(nm)
+      // 把nm赋予给tmpname临时名字成员
+      this.tmpname = nm
+
+      // sessionStorage里边name也需要同步更新
+      let userinfo = JSON.parse(window.sessionStorage.getItem('userinfo'))
+      userinfo.name = nm // 更新名字
+      window.sessionStorage.setItem('userinfo', JSON.stringify(userinfo))// 再把更新后的信息存储给sessionStorage里边
+    })
+    // // 给bus绑定事件,对账户的头像做更新
+    bus.$on('upAccountPhoto', ph => {
+      this.tmpphoto = ph
+
+      let userinfo = JSON.parse(window.sessionStorage.getItem('userinfo'))
+      userinfo.photo = ph // 更新名字
+      window.sessionStorage.setItem('userinfo', JSON.stringify(userinfo))
+    })
+  },
+  data () {
+    return {
+      tmpname: '', // 账户临时名字
+      tmpphoto: '', // 账户临时名字
+      isCollapse: false // 菜单是否折叠
+    }
+  },
   computed: {
     name () {
-      return JSON.parse(window.sessionStorage.getItem('userinfo')).name
+      return this.tmpname || JSON.parse(window.sessionStorage.getItem('userinfo')).name
     },
     photo () {
-      return JSON.parse(window.sessionStorage.getItem('userinfo')).photo
+      return this.tmpphoto || JSON.parse(window.sessionStorage.getItem('userinfo')).photo
     }
   },
   methods: {

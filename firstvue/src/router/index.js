@@ -12,10 +12,12 @@ const routes = [
     component: () => import('@/views/Home'),
     redirect: '/welcome',
     children:
-   [{ path: '/welcome', name: 'welcome', component: () => import('@/views/Home_son/welcome.vue') },
+   [ { path: '/welcome', name: 'welcome', component: () => import('@/views/Home_son/welcome.vue') },
      { path: '/article', name: 'article_list', component: () => import('@/views/Home_son/article.vue') },
      { path: '/addarticle', name: 'ArticleAdd', component: () => import('@/views/Home_son/addarticle.vue') },
-     { path: '/articleedit/:aid', name: 'ArticleEdit', component: () => import('@/views/Home_son/articleedit.vue') }] }
+     { path: '/articleedit/:aid', name: 'ArticleEdit', component: () => import('@/views/Home_son/articleedit.vue') },
+     { path: '/account', name: 'Account', component: () => import('@/views/Home_son/account.vue') }
+   ] }
   // { path: '/', name: 'home', component: () => import('@/views/Login') }
 ]
 const router = new VueRouter({
