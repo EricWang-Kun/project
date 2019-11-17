@@ -19,6 +19,13 @@
               <el-radio :label="0">无图</el-radio>
               <el-radio :label="-1">自动</el-radio>
             </el-radio-group>
+            <ul>
+               <li class="uploadbox" v-for="item in covernum" :key="item"  @click="showDialog(item)">
+                <span>点击图标选择图片</span>
+                <img v-if="addForm.cover.images[item-1]" :src="addForm.cover.images[item-1]" alt="" />
+                <div v-else class="el-icon-picture-outline"></div>
+              </li>
+            </ul>
           </el-form-item>
           <el-form-item label="频道" prop="channel_id">
               <channel-com @slt="selectHandler"></channel-com>
@@ -29,6 +36,19 @@
          </el-form-item>
         </el-form>
       </div>
+      <el-dialog title="提示" :visible.sync="dialogVisible" width="60%" @close="clearImage">
+      <!--匿名插槽，设置对话框主体内容-->
+      <ul class="clearfix">
+        <li class="image-box" v-for="item in imageList" :key="item.id">
+          <img :src="item.url" alt="没有图片" @click="clkImage">
+        </li>
+      </ul>
+      <!--命名插槽，设置对话框底部显示按钮-->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="imageOK">确 定</el-button>
+      </span>
+    </el-dialog>
     </el-card>
   </div>
 </template>
@@ -49,6 +69,15 @@ export default {
   },
   data () {
     return {
+      xu: 0,
+      materialUrl: '',
+      imageList: [],
+      querycdt: {
+        collect: false, // 非收藏图片
+        page: 1,
+        per_page: 12
+      },
+      dialogVisible: false,
       addFormRules: {
         title: [
           { required: true, message: '标题必填' },
@@ -74,9 +103,64 @@ export default {
     }
   },
   created () {
-    this.getChannelList()
+    this.getImageList()
+  },
+  computed: {
+    // 设计当前图片"选择框"个数
+    covernum () {
+      if (this.addForm.cover.type >= 0) {
+        return this.addForm.cover.type
+      }
+      return 0
+    }
   },
   methods: {
+    clearImage () {
+      let lis = document.querySelectorAll('.image-box')
+      for (var i = 0; i < lis.length; i++) {
+        lis[i].style.border = ''
+      }
+      this.materialUrl = '' // 清除图片路径名
+    },
+    imageOK () {
+      if (this.materialUrl) {
+        // 给添加文章的表单域成员cover.image增加素材图片请求地址信息
+        this.addForm.cover.images[this.xu] = this.materialUrl
+        this.dialogVisible = false // 关闭对话框
+      } else {
+        this.$message.error('咋地，不挑一个再走啊')
+      }
+    },
+    showDialog (n) {
+      // 更新xu成员
+      this.xu = n - 1
+      this.dialogVisible = true // 开启对话框
+    },
+    clkImage (evt) {
+      this.clearImage()
+      // 把全部项目的选中标志都去除
+      var lis = document.querySelectorAll('.image-box')
+      for (var i = 0; i < lis.length; i++) {
+        lis[i].style.border = ''
+      }
+      // evt：当前事件对象，设置事件时不要加括号
+      // console.log(evt) // MouseEvent
+      // evt.target: 触发当前事件的dom节点对象(img)
+      evt.target.parentNode.style.border = '3px solid red'
+      this.materialUrl = evt.target.src
+    },
+    getImageList () {
+      let pro = this.$http.get('/user/images', { params: this.querycdt })
+      pro
+        .then(result => {
+          if (result.data.message === 'OK') {
+            this.imageList = result.data.data.results
+          }
+        })
+        .catch(err => {
+          return this.$message.error('获得素材图片列表错误:' + err)
+        })
+    },
     selectHandler (val) {
       this.addForm.channel_id = val
     },
@@ -109,5 +193,58 @@ export default {
 <style lang="less" scoped>
 .el-form /deep/ .ql-editor{
   height:200px;
+}
+.uploadbox {
+  list-style: none;
+  width: 200px;
+  height: 200px;
+  margin: 10px;
+  float: left;
+  cursor: pointer;
+  border: 1px solid #eee;
+  span {
+    width: 200px;
+    height: 50px;
+    line-height: 50px;
+    display: block;
+    text-align: center;
+  }
+  div {
+    width: 200px;
+    height: 150px;
+    font-size: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+  }
+  img {
+    width: 200px;
+    height: 150px;
+  }
+}
+// 对话框素材图片列表相关css样式
+.image-box {
+  list-style: none;
+  width: 200px;
+  height: 140px;
+  background-color: #fff;
+  margin: 10px;
+  float: left;
+  border: 1px solid #eee;
+  cursor:pointer;
+  box-sizing:border-box;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+.clearfix:before,.clearfix:after{
+content: '';
+display: block;
+clear: both;
+}
+.clearfix {
+  zoom: 1;
 }
 </style>

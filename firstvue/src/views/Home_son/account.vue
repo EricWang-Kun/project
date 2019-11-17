@@ -149,11 +149,9 @@ export default {
   justify-content: space-between;
   #lt {
     width: 40%;
-    background-color: pink;
   }
   #rt {
     width: 30%;
-    background-color: lightgreen;
   }
 }
 </style>
