@@ -17,7 +17,8 @@ const routes = [
      { path: '/addarticle', name: 'ArticleAdd', component: () => import('@/views/Home_son/addarticle.vue') },
      { path: '/articleedit/:aid', name: 'ArticleEdit', component: () => import('@/views/Home_son/articleedit.vue') },
      { path: '/account', name: 'Account', component: () => import('@/views/Home_son/account.vue') },
-     { path: '/material', name: 'Material', component: () => import('@/views/Home_son/material.vue') }
+     { path: '/material', name: 'Material', component: () => import('@/views/Home_son/material.vue') },
+     { path: '/discuss', name: 'Discuss', component: () => import('@/views/Home_son/discuss.vue') }
    ] }
   // { path: '/', name: 'home', component: () => import('@/views/Login') }
 ]
