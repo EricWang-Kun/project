@@ -37,7 +37,11 @@ export default {
   name: 'Discuss',
   data () {
     return {
-      tableData: {}
+      tableData: [],
+      searchData: {
+        type: 'a',
+        source: ''
+      }
     }
   },
   created () {
@@ -45,7 +49,7 @@ export default {
   },
   methods: {
     getdiscuss () {
-      let pro = this.$http.get('/comments')
+      let pro = this.$http.get('/comments', { params: this.searchData })
       pro
         .then(result => {
           console.log(result)
